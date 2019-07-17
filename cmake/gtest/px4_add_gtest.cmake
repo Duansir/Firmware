@@ -59,7 +59,22 @@ function(px4_add_gtest)
 		add_executable(${TESTNAME} EXCLUDE_FROM_ALL ${SRC})
 
 		# link the libary to test and gtest
-		target_link_libraries(${TESTNAME} ${LINKLIBS} gtest_main)
+		target_link_libraries(${TESTNAME} ${LINKLIBS} gtest_main
+		                                              px4_daemon
+		                                              px4_platform
+		                                              modules__uORB
+		                                              px4_layer
+		                                              systemlib
+		                                              cdev
+		                                              px4_work_queue
+		                                              px4_daemon
+		                                              work_queue
+		                                              parameters
+		                                              perf
+		                                              tinybson
+		                                              uorb_msgs
+		                                              test_stubs #put this last
+		                                              )
 
 		# add the test to the ctest plan
 		add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})

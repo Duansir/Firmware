@@ -31,30 +31,12 @@
 #
 ############################################################################
 
-set(SRCS)
+set(SRCS
+    stub_daemon.cpp
+    stub_devmgr.cpp
+    stub_devmgr.cpp
+    stub_parameter_helpers.cpp
+   )
 
-if (NOT "${PX4_PLATFORM}" MATCHES "qurt" AND NOT "${PX4_BOARD}" MATCHES "io-v2")
-	list(APPEND SRCS
-		px4_log.c
-		)
-endif()
-
-add_library(px4_platform
-	module.cpp
-	px4_getopt.c
-	px4_cli.cpp
-	shutdown.cpp
-	${SRCS}
-	)
-add_dependencies(px4_platform prebuild_targets)
-
-if (NOT "${PX4_PLATFORM}" MATCHES "qurt" AND NOT "${PX4_BOARD}" MATCHES "io-v2")
-	target_link_libraries(px4_platform PRIVATE modules__uORB) # px4_log awkward dependency with uORB, TODO: orb should part of the platform layer
-endif()
-
-add_subdirectory(px4_work_queue)
-add_subdirectory(work_queue)
-
-if (BUILD_TESTING)
-	add_subdirectory(test_stubs)
-endif()
+px4_add_library(test_stubs ${SRCS})
+message("-- ADDING TEST STUBS")
