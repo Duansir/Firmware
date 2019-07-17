@@ -1,15 +1,6 @@
-#include <string>
-#include <map>
+#include "stub_daemon.h"
 
-#include <platforms/posix/apps.h>
 
-namespace px4_daemon
-{
-namespace Pxh
-{
-void process_line(std::string &, bool) {}
-}
-}
+void init_app_map(apps_map_type &apps) {stub_init_app_map_callback(apps);}
 
-void init_app_map(apps_map_type &apps) {}
-void list_builtins(apps_map_type &apps) {}
+void list_builtins(apps_map_type &apps) {stub_list_builtins_callback(apps);}

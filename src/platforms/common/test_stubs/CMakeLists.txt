@@ -34,9 +34,8 @@
 set(SRCS
     stub_daemon.cpp
     stub_devmgr.cpp
-    stub_devmgr.cpp
-    stub_parameter_helpers.cpp
+    stub_parameter.cpp
    )
 
-px4_add_library(test_stubs ${SRCS})
+px4_add_library(test_stubs $ {SRCS})
 message("-- ADDING TEST STUBS")
