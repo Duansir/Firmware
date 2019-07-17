@@ -34,4 +34,17 @@
 px4_add_library(CollisionPrevention CollisionPrevention.cpp)
 target_compile_options(CollisionPrevention PRIVATE -Wno-cast-align) # TODO: fix and enable
 
-px4_add_gtest(SRC CollisionPreventionTest.cpp LINKLIBS CollisionPrevention)
+px4_add_gtest(SRC CollisionPreventionTest.cpp LINKLIBS CollisionPrevention px4_daemon
+                                                                           px4_platform
+                                                                           modules__uORB
+                                                                           px4_layer
+                                                                           systemlib
+                                                                           cdev
+                                                                           px4_work_queue
+                                                                           px4_daemon
+                                                                           work_queue
+                                                                           parameters
+                                                                           perf
+                                                                           tinybson
+                                                                           uorb_msgs
+                                                                           test_stubs) #put test_stubs last
