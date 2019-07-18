@@ -36,8 +36,21 @@
 
 // to run: make tests TESTFILTER=CollisionPrevention
 
-TEST(CollisionPreventionTest, test)
+class CollisionPreventionTest : public ::testing::Test
 {
-	uORB::Manager::initialize();
+public:
+	void SetUp() override
+	{
+		uORB::Manager::initialize();
+	}
+
+	void TearDown() override
+	{
+		uORB::Manager::terminate();
+	}
+};
+
+TEST_F(CollisionPreventionTest, test)
+{
 	CollisionPrevention cp(nullptr);
 }
