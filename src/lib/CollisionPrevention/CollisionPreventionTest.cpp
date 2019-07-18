@@ -52,10 +52,7 @@ public:
 	}
 };
 
-TEST_F(CollisionPreventionTest, testInstantiation)
-{
-	CollisionPrevention cp(nullptr);
-}
+TEST_F(CollisionPreventionTest, testInstantiation) { CollisionPrevention cp(nullptr); }
 
 TEST_F(CollisionPreventionTest, testReadWriteParam)
 {
@@ -84,4 +81,77 @@ TEST_F(CollisionPreventionTest, testReadWriteParam)
 	// THEN: it should be the value we set
 	EXPECT_EQ(0, status);
 	EXPECT_EQ(42, value2);
+}
+
+TEST_F(CollisionPreventionTest, testBehaviorOff)
+{
+	// GIVEN: a simple setup condition
+	CollisionPrevention cp(nullptr);
+	matrix::Vector2f original_setpoint(10, 0);
+	float max_speed = 3;
+	matrix::Vector2f curr_pos(0, 0);
+	matrix::Vector2f curr_vel(2, 0);
+
+	// WHEN: we check if the setpoint should be modified
+	matrix::Vector2f modified_setpoint = original_setpoint;
+	cp.modifySetpoint(modified_setpoint, max_speed, curr_pos, curr_vel);
+
+	// THEN: it should be the same
+	EXPECT_EQ(original_setpoint, modified_setpoint);
+}
+
+TEST_F(CollisionPreventionTest, testBehaviorOn)
+{
+	// GIVEN: a simple setup condition
+	CollisionPrevention cp(nullptr);
+	matrix::Vector2f original_setpoint(10, 0);
+	float max_speed = 3;
+	matrix::Vector2f curr_pos(0, 0);
+	matrix::Vector2f curr_vel(2, 0);
+
+	// AND: a parameter handle
+	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
+
+
+	// WHEN: we set the parameter check if the setpoint should be modified
+	float value = 10;
+	param_set(param, &value);
+	matrix::Vector2f modified_setpoint = original_setpoint;
+	cp.modifySetpoint(modified_setpoint, max_speed, curr_pos, curr_vel);
+
+	// THEN: it should be the same
+	EXPECT_EQ(original_setpoint, modified_setpoint);
+}
+
+TEST_F(CollisionPreventionTest, testBehaviorOnWithAnObstacle)
+{
+	// GIVEN: a simple setup condition
+	CollisionPrevention cp(nullptr);
+	matrix::Vector2f original_setpoint(10, 0);
+	float max_speed = 3;
+	matrix::Vector2f curr_pos(0, 0);
+	matrix::Vector2f curr_vel(2, 0);
+
+	// AND: a parameter handle
+	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
+
+	// AND: an obstacle message
+	obstacle_distance_s message;
+	message.min_distance = 1.f;
+	message.max_distance = 10.f;
+	orb_advert_t obstacle_distance_pub = orb_advertise(ORB_ID(obstacle_distance_fused), &message);
+	orb_unadvertise(obstacle_distance_pub);
+
+
+	// TODO: get the uORB message into the collision prevention - need to setup the subscription against a working node
+
+
+	// WHEN: we set the parameter check if the setpoint should be modified
+	float value = 10;
+	param_set(param, &value);
+	matrix::Vector2f modified_setpoint = original_setpoint;
+	cp.modifySetpoint(modified_setpoint, max_speed, curr_pos, curr_vel);
+
+	// THEN: it should be the same
+	EXPECT_GT(original_setpoint.norm() * 0.5f, modified_setpoint.norm());
 }
