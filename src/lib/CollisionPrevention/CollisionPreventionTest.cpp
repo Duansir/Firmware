@@ -38,5 +38,6 @@
 
 TEST(CollisionPreventionTest, test)
 {
+	uORB::Manager::initialize();
 	CollisionPrevention cp(nullptr);
 }

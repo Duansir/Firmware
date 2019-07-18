@@ -16,4 +16,10 @@ extern "C" {
 	int px4_shutdown_lock() {return stub_px4_shutdown_lock_callback();}
 
 	int px4_shutdown_unlock() {return stub_px4_shutdown_unlock_callback();}
+
+	/* This function blocks forever in tests, so override it with a version that can be customized */
+	int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
+	{
+		return stub_pthread_cond_wait_callback(cond, mutex);
+	}
 }
