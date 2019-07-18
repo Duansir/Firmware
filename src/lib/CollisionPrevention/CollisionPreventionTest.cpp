@@ -42,15 +42,46 @@ public:
 	void SetUp() override
 	{
 		uORB::Manager::initialize();
+		param_init();
 	}
 
 	void TearDown() override
 	{
+		param_reset_all();
 		uORB::Manager::terminate();
 	}
 };
 
-TEST_F(CollisionPreventionTest, test)
+TEST_F(CollisionPreventionTest, testInstantiation)
 {
 	CollisionPrevention cp(nullptr);
+}
+
+TEST_F(CollisionPreventionTest, testReadWriteParam)
+{
+	// GIVEN a parameter handle
+	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
+
+	// WHEN: we get the parameter
+	float value = -999;
+	int status = param_get(param, &value);
+
+	// THEN it should be successful and have the default value
+	EXPECT_EQ(0, status);
+	EXPECT_EQ(-1, value);
+
+	// WHEN: we set the parameter
+	value = 42;
+	status = param_set(param, &value);
+
+	// THEN: it should be successful
+	EXPECT_EQ(0, status);
+
+	// WHEN: we get the parameter again
+	float value2 = -1999;
+	status = param_get(param, &value2);
+
+	// THEN: it should be the value we set
+	EXPECT_EQ(0, status);
+	EXPECT_EQ(42, value2);
 }
