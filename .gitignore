@@ -66,4 +66,4 @@ posix-configs/SITL/init/test/*_generated
 .coverage.*
 
 # KDevelop ignores
-/.kdev4/*
+.kdev4/*

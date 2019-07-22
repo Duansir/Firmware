@@ -54,7 +54,3 @@ endif()
 
 add_subdirectory(px4_work_queue)
 add_subdirectory(work_queue)
-
-if (BUILD_TESTING)
-	add_subdirectory(test_stubs)
-endif()

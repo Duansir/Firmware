@@ -422,7 +422,7 @@ private: // data members
 
 private: //class methods
 	Manager();
-	~Manager();
+	virtual ~Manager();
 
 #ifdef ORB_COMMUNICATOR
 	/**
