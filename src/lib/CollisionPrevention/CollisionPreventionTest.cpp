@@ -54,7 +54,7 @@ public:
 
 TEST_F(CollisionPreventionTest, testInstantiation) { CollisionPrevention cp(nullptr); }
 
-TEST_F(CollisionPreventionTest, testReadWriteParam)
+TEST_F(CollisionPreventionTest, testParamReadWrite)
 {
 	// GIVEN a parameter handle
 	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
