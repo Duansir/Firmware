@@ -60,7 +60,7 @@ TEST_F(CollisionPreventionTest, testParamReadWrite)
 	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
 
 	// WHEN: we get the parameter
-	float value = -999;
+	float value = -999.f;
 	int status = param_get(param, &value);
 
 	// THEN it should be successful and have the default value
@@ -68,19 +68,19 @@ TEST_F(CollisionPreventionTest, testParamReadWrite)
 	EXPECT_EQ(-1, value);
 
 	// WHEN: we set the parameter
-	value = 42;
+	value = 42.f;
 	status = param_set(param, &value);
 
 	// THEN: it should be successful
 	EXPECT_EQ(0, status);
 
 	// WHEN: we get the parameter again
-	float value2 = -1999;
+	float value2 = -1999.f;
 	status = param_get(param, &value2);
 
-	// THEN: it should be the value we set
+	// THEN: it should be exactly the value we set
 	EXPECT_EQ(0, status);
-	EXPECT_EQ(42, value2);
+	EXPECT_EQ(42.f, value2);
 }
 
 TEST_F(CollisionPreventionTest, testUorbSendReceive)
@@ -116,7 +116,7 @@ TEST_F(CollisionPreventionTest, testBehaviorOff)
 	// GIVEN: a simple setup condition
 	CollisionPrevention cp(nullptr);
 	matrix::Vector2f original_setpoint(10, 0);
-	float max_speed = 3;
+	float max_speed = 3.f;
 	matrix::Vector2f curr_pos(0, 0);
 	matrix::Vector2f curr_vel(2, 0);
 
@@ -128,12 +128,12 @@ TEST_F(CollisionPreventionTest, testBehaviorOff)
 	EXPECT_EQ(original_setpoint, modified_setpoint);
 }
 
-TEST_F(CollisionPreventionTest, testBehaviorOn)
+TEST_F(CollisionPreventionTest, testBehaviorOnWithoutObstacleMessage)
 {
 	// GIVEN: a simple setup condition
 	CollisionPrevention cp(nullptr);
 	matrix::Vector2f original_setpoint(10, 0);
-	float max_speed = 3;
+	float max_speed = 3.f;
 	matrix::Vector2f curr_pos(0, 0);
 	matrix::Vector2f curr_vel(2, 0);
 
@@ -141,13 +141,14 @@ TEST_F(CollisionPreventionTest, testBehaviorOn)
 	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
 
 
-	// WHEN: we set the parameter check if the setpoint should be modified
-	float value = 10;
+	// WHEN: we set the parameter check then apply the setpoint modification
+	float value = 10; // try to keep 10m away from obstacles
 	param_set(param, &value);
+
 	matrix::Vector2f modified_setpoint = original_setpoint;
 	cp.modifySetpoint(modified_setpoint, max_speed, curr_pos, curr_vel);
 
-	// THEN: it should be the same
+	// THEN: it shouldn't interfere with the setpoint, because there isn't an obstacle
 	EXPECT_EQ(original_setpoint, modified_setpoint);
 }
 
