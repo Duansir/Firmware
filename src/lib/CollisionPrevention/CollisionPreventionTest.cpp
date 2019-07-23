@@ -152,7 +152,6 @@ TEST_F(CollisionPreventionTest, testBehaviorOnWithoutObstacleMessage)
 	EXPECT_EQ(original_setpoint, modified_setpoint);
 }
 
-/* Disabled, needs debugging to see why it is failing
 TEST_F(CollisionPreventionTest, testBehaviorOnWithAnObstacle)
 {
 	// GIVEN: a simple setup condition
@@ -168,22 +167,25 @@ TEST_F(CollisionPreventionTest, testBehaviorOnWithAnObstacle)
 	// AND: an obstacle message
 	obstacle_distance_s message;
 	memset(&message, 0xDEAD, sizeof(message));
-	message.min_distance = 1.f;
-	message.max_distance = 10.f;
+	message.min_distance = 100;
+	message.max_distance = 1000;
+	message.timestamp = hrt_absolute_time();
+	int distances_array_size = sizeof(message.distances) / sizeof(message.distances[0]);
+	message.increment = 360 / distances_array_size;
+
+	for (int i = 0; i < distances_array_size; i++) {
+		message.distances[i] = 150;
+	}
+
+
+	// WHEN: we publish the message and set the parameter and then run the setpoint modification
 	orb_advert_t obstacle_distance_pub = orb_advertise(ORB_ID(obstacle_distance), &message);
-
-
-	// FIXME: get the uORB message into the collision prevention - need to setup the subscription against a working node
-
-
-	// WHEN: we set the parameter check if the setpoint should be modified
 	float value = 10;
 	param_set(param, &value);
 	matrix::Vector2f modified_setpoint = original_setpoint;
 	cp.modifySetpoint(modified_setpoint, max_speed, curr_pos, curr_vel);
 
-	// THEN: it should be the same
+	// THEN: it should be cut down a lot
 	orb_unadvertise(obstacle_distance_pub);
 	EXPECT_GT(original_setpoint.norm() * 0.5f, modified_setpoint.norm());
 }
-*/

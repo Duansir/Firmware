@@ -102,7 +102,7 @@ void CollisionPrevention::_updateOffboardObstacleDistance(obstacle_distance_s &o
 void CollisionPrevention::_updateDistanceSensor(obstacle_distance_s &obstacle)
 {
 	for (unsigned i = 0; i < ORB_MULTI_MAX_INSTANCES; i++) {
-		distance_sensor_s distance_sensor;
+		distance_sensor_s distance_sensor {};
 		_sub_distance_sensor[i].copy(&distance_sensor);
 
 		// consider only instaces with updated, valid data and orientations useful for collision prevention
