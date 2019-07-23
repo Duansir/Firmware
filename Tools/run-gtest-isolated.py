@@ -37,6 +37,18 @@ def run_tests(bin_path, tests_list, args):
     return 0
 
 
-tests_list = list_all_tests(argv[1])
-print(tests_list)
-exit(run_tests(argv[1], tests_list, argv[2:]))
+
+def main():
+    if len(argv) >= 2:
+        try:
+            exit(run_tests(argv[1], list_all_tests(argv[1]), argv[2:]))
+        except:
+            print('Error with arguments "' + ' '.join(argv[1:]) + '"')
+            raise
+    print('Runs each gtest test in a difference process')
+    print('Usage: ' + argv[0] + ' path/to/gtest.bin [GTEST_OPTIONS]')
+    exit(1)
+
+
+if __name__ == '__main__':
+    main()
