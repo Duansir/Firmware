@@ -62,7 +62,9 @@ function(px4_add_gtest)
 		target_link_libraries(${TESTNAME} ${LINKLIBS} gtest_main)
 
 		# add the test to the ctest plan
-		add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
+		add_test(NAME ${TESTNAME}
+		         COMMAND ${PX4_SOURCE_DIR}/Tools/run-gtest-isolated.py ${TESTNAME}
+		         WORKING_DIRECTORY ${PX4_BINARY_DIR})
 
 		# attach it to the unit test target
 		add_dependencies(test_results ${TESTNAME})
