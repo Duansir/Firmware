@@ -52,66 +52,9 @@ public:
 	}
 };
 
-TEST_F(CollisionPreventionTest, testInstantiation) { CollisionPrevention cp(nullptr); }
+TEST_F(CollisionPreventionTest, instantiation) { CollisionPrevention cp(nullptr); }
 
-TEST_F(CollisionPreventionTest, testParamReadWrite)
-{
-	// GIVEN a parameter handle
-	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
-
-	// WHEN: we get the parameter
-	float value = -999.f;
-	int status = param_get(param, &value);
-
-	// THEN it should be successful and have the default value
-	EXPECT_EQ(0, status);
-	EXPECT_EQ(-1, value);
-
-	// WHEN: we set the parameter
-	value = 42.f;
-	status = param_set(param, &value);
-
-	// THEN: it should be successful
-	EXPECT_EQ(0, status);
-
-	// WHEN: we get the parameter again
-	float value2 = -1999.f;
-	status = param_get(param, &value2);
-
-	// THEN: it should be exactly the value we set
-	EXPECT_EQ(0, status);
-	EXPECT_EQ(42.f, value2);
-}
-
-TEST_F(CollisionPreventionTest, testUorbSendReceive)
-{
-	// GIVEN: a uOrb message
-	obstacle_distance_s message;
-	memset(&message, 0xDEAD, sizeof(message));
-	message.min_distance = 1.f;
-	message.max_distance = 10.f;
-
-	// AND: a subscriber
-	uORB::SubscriptionData<obstacle_distance_s> sub_obstacle_distance{ORB_ID(obstacle_distance)};
-
-	// WHEN we send the message
-	orb_advert_t obstacle_distance_pub = orb_advertise(ORB_ID(obstacle_distance), &message);
-	ASSERT_TRUE(obstacle_distance_pub != nullptr);
-
-	// THEN: the subscriber should receive the message
-	sub_obstacle_distance.update();
-	const obstacle_distance_s &obstacle_distance = sub_obstacle_distance.get();
-
-	// AND: the values we got should be the same
-	EXPECT_EQ(message.timestamp, obstacle_distance.timestamp);
-	EXPECT_EQ(message.min_distance, obstacle_distance.min_distance);
-	EXPECT_EQ(message.max_distance, obstacle_distance.max_distance);
-
-	// AND: all the bytes should be equal
-	EXPECT_EQ(0, memcmp(&message, &obstacle_distance, sizeof(message)));
-}
-
-TEST_F(CollisionPreventionTest, testBehaviorOff)
+TEST_F(CollisionPreventionTest, behaviorOff)
 {
 	// GIVEN: a simple setup condition
 	CollisionPrevention cp(nullptr);
@@ -128,7 +71,7 @@ TEST_F(CollisionPreventionTest, testBehaviorOff)
 	EXPECT_EQ(original_setpoint, modified_setpoint);
 }
 
-TEST_F(CollisionPreventionTest, testBehaviorOnWithoutObstacleMessage)
+TEST_F(CollisionPreventionTest, withoutObstacleMessageNothing)
 {
 	// GIVEN: a simple setup condition
 	CollisionPrevention cp(nullptr);
@@ -174,7 +117,7 @@ TEST_F(CollisionPreventionTest, testBehaviorOnWithAnObstacle)
 	message.increment = 360 / distances_array_size;
 
 	for (int i = 0; i < distances_array_size; i++) {
-		message.distances[i] = 150;
+		message.distances[i] = 101;
 	}
 
 
@@ -184,8 +127,8 @@ TEST_F(CollisionPreventionTest, testBehaviorOnWithAnObstacle)
 	param_set(param, &value);
 	matrix::Vector2f modified_setpoint = original_setpoint;
 	cp.modifySetpoint(modified_setpoint, max_speed, curr_pos, curr_vel);
+	orb_unadvertise(obstacle_distance_pub);
 
 	// THEN: it should be cut down a lot
-	orb_unadvertise(obstacle_distance_pub);
-	EXPECT_GT(original_setpoint.norm() * 0.5f, modified_setpoint.norm());
+	EXPECT_GT(original_setpoint.norm() * 0.5f, modified_setpoint.norm()); //FIXME: this should actually be constrained to 0
 }
