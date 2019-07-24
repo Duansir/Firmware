@@ -61,7 +61,8 @@ uORB::DeviceNode::DeviceNode(const struct orb_metadata *meta, const uint8_t inst
 	_meta(meta),
 	_instance(instance),
 	_priority(priority),
-	_queue_size(queue_size)
+	_queue_size(queue_size),
+	_devname(path)
 {
 }
 
@@ -69,6 +70,11 @@ uORB::DeviceNode::~DeviceNode()
 {
 	if (_data != nullptr) {
 		delete[] _data;
+	}
+
+	if (_devname != nullptr) {
+		free((void *)_devname);
+		_devname = nullptr;
 	}
 }
 
