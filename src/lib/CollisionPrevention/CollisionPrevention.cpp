@@ -53,6 +53,18 @@ CollisionPrevention::~CollisionPrevention()
 	if (_mavlink_log_pub != nullptr) {
 		orb_unadvertise(_mavlink_log_pub);
 	}
+
+	if (_constraints_pub != nullptr) {
+		orb_unadvertise(_constraints_pub);
+	}
+
+	if (_obstacle_distance_pub != nullptr) {
+		orb_unadvertise(_obstacle_distance_pub);
+	}
+
+	if (_pub_vehicle_command != nullptr) {
+		orb_unadvertise(_pub_vehicle_command);
+	}
 }
 
 void CollisionPrevention::_publishConstrainedSetpoint(const Vector2f &original_setpoint,
