@@ -33,7 +33,6 @@
 
 #include "uORBDeviceNode.hpp"
 
-#include "uORBDeviceNode.hpp"
 #include "uORBUtils.hpp"
 #include "uORBManager.hpp"
 
@@ -61,8 +60,7 @@ uORB::DeviceNode::DeviceNode(const struct orb_metadata *meta, const uint8_t inst
 	_meta(meta),
 	_instance(instance),
 	_priority(priority),
-	_queue_size(queue_size),
-	_devname(path)
+	_queue_size(queue_size)
 {
 }
 
@@ -72,10 +70,7 @@ uORB::DeviceNode::~DeviceNode()
 		delete[] _data;
 	}
 
-	if (_devname != nullptr) {
-		free((void *)_devname);
-		_devname = nullptr;
-	}
+	CDev::unregister_driver_and_memory();
 }
 
 int

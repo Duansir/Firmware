@@ -273,7 +273,6 @@ private:
 	bool _published{false};  /**< has ever data been published */
 	uint8_t _queue_size; /**< maximum number of elements in the queue */
 	int8_t _subscriber_count{0};
-	const char *_devname; /**< keep this to delete at teardown, since CDev doesn't */
 
 	px4_task_t _publisher{0}; /**< if nonzero, current publisher. Only used inside the advertise call.
 						We allow one publisher to have an open file descriptor at the same time. */
