@@ -106,6 +106,8 @@ TEST_F(CollisionPreventionTest, testBehaviorOnWithAnObstacle)
 
 	// AND: a parameter handle
 	param_t param = param_handle(px4::params::MPC_COL_PREV_D);
+	float value = 10; // try to keep 10m distance
+	param_set(param, &value);
 
 	// AND: an obstacle message
 	obstacle_distance_s message;
@@ -120,11 +122,10 @@ TEST_F(CollisionPreventionTest, testBehaviorOnWithAnObstacle)
 		message.distances[i] = 101;
 	}
 
+	orb_advert_t obstacle_distance_pub = orb_advertise(ORB_ID(obstacle_distance), &message);
+
 
 	// WHEN: we publish the message and set the parameter and then run the setpoint modification
-	orb_advert_t obstacle_distance_pub = orb_advertise(ORB_ID(obstacle_distance), &message);
-	float value = 10;
-	param_set(param, &value);
 	matrix::Vector2f modified_setpoint = original_setpoint;
 	cp.modifySetpoint(modified_setpoint, max_speed, curr_pos, curr_vel);
 	orb_unadvertise(obstacle_distance_pub);
